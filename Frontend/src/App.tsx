@@ -1,9 +1,15 @@
+
+// src/App.tsx
 import { useEffect, useState } from "react";
 import { getContainers, createContainer, updateContainer, deleteContainer } from "./api/containerApi";
 import type { Container } from "./types/container";
 import ContainerForm from "./components/ContainerForm";
+import DetectionPage from "./pages/DetectionPage";
+
+type Tab = "containers" | "detection";
 
 function App() {
+  const [activeTab, setActiveTab] = useState<Tab>("detection");
   const [containers, setContainers] = useState<Container[]>([]);
 
   function refresh() {
@@ -33,30 +39,52 @@ function App() {
   }
 
   return (
-    <div>
-      <h1>Containers</h1>
-      <ContainerForm onSubmit={handleCreate} />
-      <table border={1} cellPadding={8}>
-        <thead>
-          <tr>
-            <th>ID</th><th>Number</th><th>Status</th><th>Location</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {containers.map((c) => (
-            <tr key={c.id}>
-              <td>{c.id}</td>
-              <td>{c.container_number}</td>
-              <td>{c.status}</td>
-              <td>{c.location ?? "-"}</td>
-              <td>
-                <button onClick={() => handleAdvance(c)}>Advance status</button>
-                <button onClick={() => handleDelete(c.id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div style={{ padding: "1rem", fontFamily: "sans-serif" }}>
+      <h1>Container Tracker</h1>
+
+      <div style={{ marginBottom: "1rem" }}>
+        <button
+          onClick={() => setActiveTab("detection")}
+          style={{ fontWeight: activeTab === "detection" ? "bold" : "normal", marginRight: "0.5rem" }}
+        >
+          Live Detection
+        </button>
+        <button
+          onClick={() => setActiveTab("containers")}
+          style={{ fontWeight: activeTab === "containers" ? "bold" : "normal" }}
+        >
+          Containers
+        </button>
+      </div>
+
+      {activeTab === "detection" && <DetectionPage />}
+
+      {activeTab === "containers" && (
+        <div>
+          <ContainerForm onSubmit={handleCreate} />
+          <table border={1} cellPadding={8}>
+            <thead>
+              <tr>
+                <th>ID</th><th>Number</th><th>Status</th><th>Location</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {containers.map((c) => (
+                <tr key={c.id}>
+                  <td>{c.id}</td>
+                  <td>{c.container_number}</td>
+                  <td>{c.status}</td>
+                  <td>{c.location ?? "-"}</td>
+                  <td>
+                    <button onClick={() => handleAdvance(c)}>Advance status</button>
+                    <button onClick={() => handleDelete(c.id)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 }
