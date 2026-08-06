@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, Text, func
 from .database import Base
-
 
 
 class Container(Base):
@@ -10,16 +9,19 @@ class Container(Base):
     status = Column(String, default="in_yard")  # in_yard, on_truck, on_ship
     location = Column(String, nullable=True)
 
-class Truck(Base):
-    __tablename__ = "trucks"
-    id = Column(Integer, primary_key=True, index=True)
-    plate_number = Column(String, unique=True, index=True)
-    driver_name = Column(String, nullable=True)
-    status = Column(String, default="available")  # available, on_delivery
 
-class Ship(Base):
-    __tablename__ = "ships"
+class DetectionHistory(Base):
+    __tablename__ = "detection_history"
     id = Column(Integer, primary_key=True, index=True)
-    Ship_number = Column(String, unique=True, index=True)
-    name = Column(String, index=True)
-    status = Column(String, default="at_sea")  # at_sea, docked
+    container_number = Column(String, nullable=False, index=True)
+    confidence = Column(Float, nullable=False)
+    verified = Column(Boolean, default=True, nullable=False)
+    detected_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)
+
+
+class ChatMessage(Base):
+    __tablename__ = "chat_messages"
+    id = Column(Integer, primary_key=True, index=True)
+    role = Column(String, nullable=False)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)

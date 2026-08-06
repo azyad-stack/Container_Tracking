@@ -5,6 +5,7 @@ interface DetectionSummaryPanelProps {
   detectedAt: string | null;
   isDetecting: boolean;
   cameraStatus: string;
+  location: string;
   errorMessage: string | null;
 }
 
@@ -15,50 +16,58 @@ function DetectionSummaryPanel({
   detectedAt,
   isDetecting,
   cameraStatus,
+  location,
   errorMessage,
 }: DetectionSummaryPanelProps) {
-  const statusLabel = cameraStatus === "active"
-    ? "Camera ready"
-    : cameraStatus === "connecting"
-      ? "Connecting to camera"
-      : cameraStatus === "error"
-        ? "Camera unavailable"
-        : "Waiting for camera";
+  const statusLabel =
+    cameraStatus === "active"
+      ? "Camera ready"
+      : cameraStatus === "connecting"
+        ? "Connecting to camera"
+        : cameraStatus === "error"
+          ? "Camera unavailable"
+          : "Waiting for camera";
+
+  const resultStatus = containerNumber ? (verified ? "Verified" : "Pending review") : "Awaiting live detection";
 
   return (
-    <div className="summary-panel">
+    <section className="summary-panel">
       <div className="summary-header">
         <div>
-          <p className="summary-kicker">Detection result</p>
-          <h2>{containerNumber ?? "Waiting for detection"}</h2>
+          <p className="summary-kicker">Live Detection Status</p>
+          <p className="summary-subtitle">{statusLabel}</p>
         </div>
-        <div className={`status-pill ${verified ? "status-valid" : "status-pending"}`}>
-          {verified ? "Valid" : containerNumber ? "Pending validation" : "No result"}
-        </div>
+        <span className={`status-pill ${verified ? "status-valid" : "status-pending"}`}>
+          {resultStatus}
+        </span>
       </div>
 
       <div className="summary-grid">
-        <div className="summary-card">
-          <span className="summary-label">Validation</span>
-          <strong>{containerNumber ? (verified ? "Valid" : "Invalid") : "Pending"}</strong>
+        <div className="summary-row">
+          <span>Container</span>
+          <strong>{containerNumber ?? "-"}</strong>
         </div>
-        <div className="summary-card">
-          <span className="summary-label">Confidence</span>
-          <strong>{confidence !== null ? `${Math.round(confidence * 100)}%` : "—"}</strong>
+        <div className="summary-row">
+          <span>Validation</span>
+          <strong>{containerNumber ? (verified ? "Verified" : "Pending review") : "Awaiting detection"}</strong>
         </div>
-        <div className="summary-card">
-          <span className="summary-label">Updated</span>
-          <strong>{detectedAt ?? "—"}</strong>
+        <div className="summary-row">
+          <span>Confidence</span>
+          <strong>{confidence !== null ? `${(confidence * 100).toFixed(1)}%` : "-"}</strong>
         </div>
-        <div className="summary-card">
-          <span className="summary-label">Camera</span>
-          <strong>{statusLabel}</strong>
+        <div className="summary-row">
+          <span>Last updated</span>
+          <strong>{detectedAt ? new Date(detectedAt).toLocaleString() : "-"}</strong>
+        </div>
+        <div className="summary-row">
+          <span>Location</span>
+          <strong>{location}</strong>
         </div>
       </div>
 
       {errorMessage ? <p className="summary-error">{errorMessage}</p> : null}
-      {isDetecting ? <p className="summary-note">Scanning the latest frame…</p> : null}
-    </div>
+      {isDetecting ? <p className="summary-note">Scanning active feed for terminal containers...</p> : null}
+    </section>
   );
 }
 
