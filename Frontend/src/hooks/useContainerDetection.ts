@@ -44,9 +44,9 @@ export function useContainerDetection(
       abortControllerRef.current = new AbortController();
 
       try {
-        const res = await fetch(base64Image);
-        const blob = await res.blob();
-        const result = await detectContainerId(blob);
+        const response = await fetch(base64Image);
+        const imageBlob = await response.blob();
+        const result = await detectContainerId(imageBlob);
         console.info("Detection API response", result);
 
         const canvas = canvasRef.current;

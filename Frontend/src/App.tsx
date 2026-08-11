@@ -18,7 +18,7 @@ function App() {
 
         <div className="dashboard-meta">
           <span className="status-chip online">Live monitoring</span>
-          <span className="header-location">Gate A · Terminal 04</span>
+          <span className="header-location">Gate B · TC3</span>
         </div>
       </header>
 
